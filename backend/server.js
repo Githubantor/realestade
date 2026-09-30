@@ -92,31 +92,37 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  console.log(`🔗 http://localhost:${PORT}`);
-});
+// For local development - listen on port
+// For Vercel - export app and don't listen (Vercel handles it)
+let server;
+if (!process.env.VERCEL) {
+  server = app.listen(PORT, () => {
+    console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    console.log(`🔗 http://localhost:${PORT}`);
+  });
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`❌ Port ${PORT} already in use!`);
-    console.error(`👉 Fix: kill process on port ${PORT} or change PORT in backend/.env`);
-    console.error(`   Windows: netstat -aon | findstr :${PORT}  then  taskkill /F /PID <PID>`);
-    console.error(`   Or: taskkill /F /IM node.exe`);
-    // Try next port automatically
-    const nextPort = Number(PORT) + 1;
-    console.log(`🔄 Trying port ${nextPort}...`);
-    server.listen(nextPort);
-  } else {
-    console.error('Server error:', err);
-  }
-});
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${PORT} already in use!`);
+      console.error(`👉 Fix: kill process on port ${PORT} or change PORT in backend/.env`);
+      console.error(`   Windows: netstat -aon | findstr :${PORT}  then  taskkill /F /PID <PID>`);
+      console.error(`   Or: taskkill /F /IM node.exe`);
+      const nextPort = Number(PORT) + 1;
+      console.log(`🔄 Trying port ${nextPort}...`);
+      server.listen(nextPort);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => process.exit(0));
-});
-process.on('SIGINT', () => {
-  server.close(() => process.exit(0));
-});
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => process.exit(0));
+  });
+  process.on('SIGINT', () => {
+    server.close(() => process.exit(0));
+  });
+}
+
+export default app;
