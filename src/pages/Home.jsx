@@ -658,33 +658,23 @@ function EstatesCarousel() {
                   transition={{ delay: 0.2 + i * 0.05 }}
                   className="absolute bottom-0 p-6 text-white w-full"
                 >
-                  <div className="text-[10px] tracking-[0.2em] text-gold-300 font-semibold">{it.loc.toUpperCase()}</div>
+                  <div className="text-[10px] tracking-[0.2em] text-gold-300 font-semibold">{(it.loc || '').toUpperCase()}</div>
                   <div className="font-serif text-[21px] mt-1 leading-tight">{it.name}</div>
                   {it.price && <div className="text-[12px] tracking-[0.1em] text-white/80 mt-1">{it.price}</div>}
                   <motion.div whileHover={{ scale: 1.03 }} className="mt-3 inline-flex items-center gap-2 text-[11px] tracking-[0.16em] border border-white/35 bg-white/10 backdrop-blur px-4 py-2 group-hover:bg-white group-hover:text-black transition">EXPLORE <ArrowUpRight size={12} /></motion.div>
                 </motion.div>
               </>
             )
-            return it._id ? (
+            // Every card is always a working link: real detail page, or the full
+            // listings page as a last resort — never a dead click.
+            return (
               <Link
-                key={it._id + i}
-                to={`/property/${it._id}`}
+                key={(it._id || it.name) + i}
+                to={it._id ? `/property/${it._id}` : '/properties'}
                 className="group relative h-[380px] lg:h-[420px] overflow-hidden cursor-pointer bg-zinc-100 block"
               >
                 {CardContent}
               </Link>
-            ) : (
-              <motion.div
-                key={it.name}
-                initial={{ opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -4 }}
-                className="group relative h-[380px] lg:h-[420px] overflow-hidden cursor-pointer bg-zinc-100"
-              >
-                {CardContent}
-              </motion.div>
             )
           })}
         </div>
