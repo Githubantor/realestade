@@ -29,6 +29,12 @@ export const getProperties = asyncHandler(async (req, res) => {
     if (req.query.beds) {
       filtered = filtered.filter((p) => p.beds >= Number(req.query.beds));
     }
+    if (req.query.minPrice) {
+      filtered = filtered.filter((p) => (p.priceValue || 0) >= Number(req.query.minPrice));
+    }
+    if (req.query.maxPrice) {
+      filtered = filtered.filter((p) => (p.priceValue || 0) <= Number(req.query.maxPrice));
+    }
     if (req.query.type) {
       filtered = filtered.filter((p) => p.type === req.query.type);
     }
@@ -50,7 +56,7 @@ export const getProperties = asyncHandler(async (req, res) => {
   const reqQuery = { ...req.query };
 
   // Fields to exclude
-  const removeFields = ['select', 'sort', 'page', 'limit', 'search', 'keyword'];
+  const removeFields = ['select', 'sort', 'page', 'limit', 'search', 'keyword', 'minPrice', 'maxPrice'];
   removeFields.forEach((param) => delete reqQuery[param]);
 
   // Create query string

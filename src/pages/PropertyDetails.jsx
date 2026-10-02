@@ -3,25 +3,73 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, BedDouble, Bath, Square, ArrowLeft, Heart, Phone, Mail, Crown, Building2, Calendar, Eye, Tag, Home, Sparkles } from 'lucide-react';
 import { api } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { findFallbackProperty } from '../data/fallbackProperties';
+
+const isDbId = (id) => /^[0-9a-fA-F]{24}$/.test(String(id || ''));
 
 export default function PropertyDetails() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeImg, setActiveImg] = useState(0);
+  const [isFav, setIsFav] = useState(false);
+  const [favBusy, setFavBusy] = useState(false);
   const [inquiry, setInquiry] = useState({ name: '', email: '', phone: '', message: '' });
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setError('');
     api.getProperty(id)
       .then((res) => {
         setProperty(res.data)
         setActiveImg(0)
       })
-      .catch((err) => setError(err.message))
+      .catch(() => {
+        // API unreachable — serve the curated local copy so every card stays clickable
+        const local = findFallbackProperty(id);
+        if (local) {
+          setProperty(local)
+          setActiveImg(0)
+        } else {
+          setError('Property not found')
+        }
+      })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!user || !property || !isDbId(property._id)) {
+      setIsFav(false);
+      return;
+    }
+    api.checkFavorite(property._id).then((r) => setIsFav(!!r.isFavorite)).catch(() => {});
+  }, [user, property]);
+
+  const toggleFavorite = async () => {
+    if (!user) {
+      alert('Please login to save favorites');
+      return;
+    }
+    if (favBusy || !property) return;
+    setFavBusy(true);
+    try {
+      if (isFav) {
+        await api.removeFavorite(property._id);
+        setIsFav(false);
+      } else {
+        await api.addFavorite(property._id);
+        setIsFav(true);
+      }
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setFavBusy(false);
+    }
+  };
 
   const handleInquiry = async (e) => {
     e.preventDefault();
@@ -58,6 +106,17 @@ export default function PropertyDetails() {
               {property.featured && <span className="bg-gold-500 text-white px-3 py-1.5 text-[10px] tracking-[0.12em] font-bold flex items-center gap-1"><Sparkles size={10}/> FEATURED</span>}
             </div>
             <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur text-white text-[11px] tracking-[0.14em] px-3 py-1.5 flex items-center gap-2"><Eye size={12}/> {property.views || 0} VIEWS</div>
+            {isDbId(property._id) && (
+              <button
+                onClick={toggleFavorite}
+                disabled={favBusy}
+                aria-label="Save to favorites"
+                title={user ? (isFav ? 'Remove from favorites' : 'Save to favorites') : 'Login to save favorites'}
+                className={`absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur flex items-center justify-center shadow transition disabled:opacity-60 ${isFav ? 'bg-gold-500 text-white' : 'bg-white/95 text-zinc-700 hover:text-gold-600'}`}
+              >
+                <Heart size={17} fill={isFav ? 'currentColor' : 'none'} />
+              </button>
+            )}
             {property.images?.length > 1 && (
               <>
                 <button onClick={() => setActiveImg(p => (p - 1 + property.images.length) % property.images.length)} className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center hover:bg-white shadow hidden lg:flex">‹</button>

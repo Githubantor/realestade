@@ -96,6 +96,9 @@ export const api = {
       headers: authHeaders(),
     }).then(handleResponse),
 
+  checkFavorite: (propertyId) =>
+    fetch(`${API_URL}/favorites/check/${propertyId}`, { headers: authHeaders() }).then(handleResponse),
+
   // Health
   health: () => fetch(`${API_URL}/health`).then(handleResponse),
 };

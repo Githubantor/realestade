@@ -8,24 +8,12 @@ import {
 } from 'lucide-react'
 import { api } from '../utils/api'
 import { useAuth } from '../context/AuthContext'
-
-// --- Fallback Data (used while loading / if API offline) ---
-const fallbackProperties = [
-  { _id: 1, price: "$139,000,000", address: "1021 N Beverly Drive, Beverly Hills", beds: 8, baths: 12, sqft: "18,500", tag: "TROUSDALE", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=1200&auto=format&fit=crop"], status: "New Listing" },
-  { _id: 2, price: "$79,500,000", address: "950 Bel Air Road, Bel Air", beds: 7, baths: 10, sqft: "14,200", tag: "BEL AIR", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop"], status: "Private Listing" },
-  { _id: 3, price: "$45,000,000", address: "1470 Carla Ridge, Beverly Hills", beds: 6, baths: 9, sqft: "11,800", tag: "BIRDNEST", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200&auto=format&fit=crop"], status: "Just Sold" },
-  { _id: 4, price: "$62,800,000", address: "864 Stradella Road, Bel Air", beds: 7, baths: 11, sqft: "13,400", tag: "STRADALLA", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop"], status: "New Listing" },
-  { _id: 5, price: "$28,900,000", address: "755 Sarbonne Road, Bel Air", beds: 5, baths: 7, sqft: "8,950", tag: "SARBONNE", image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1200&auto=format&fit=crop"], status: "Price Reduced" },
-  { _id: 6, price: "$88,000,000", address: "1181 N Doheny Drive, Hollywood Hills", beds: 9, baths: 14, sqft: "21,000", tag: "DOHENY ESTATE", image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop"], status: "Iconic" },
-  { _id: 7, price: "$52,000,000", address: "31202 Carbon Beach Terrace, Malibu", beds: 6, baths: 8, sqft: "9,800", tag: "CARBON BEACH", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop"], status: "New Listing" },
-  { _id: 8, price: "$95,000,000", address: "1040 Laurel Way, Trousdale Estates", beds: 8, baths: 13, sqft: "19,200", tag: "TROUSDALE", image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1200&auto=format&fit=crop"], status: "Private Listing" },
-  { _id: 9, price: "$34,500,000", address: "623 N Palm Drive, Beverly Hills", beds: 6, baths: 8, sqft: "10,400", tag: "BEVERLY HILLS", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1200&auto=format&fit=crop"], status: "Price Reduced" },
-]
+import { fallbackProperties } from '../data/fallbackProperties'
 
 const agents = [
-  { name: "Sebastian Vance", role: "Founding Partner", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop", sales: "$1.8B Sold" },
-  { name: "Isabella Noir", role: "Founding Partner", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=600&auto=format&fit=crop", sales: "$1.4B Sold" },
-  { name: "Julian Cross", role: "Senior Estate Director", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop", sales: "$890M Sold" },
+  { name: "Sebastian Vance", role: "Founding Partner", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop", sales: "$1.8B Sold", phone: "3108883527", email: "sebastian@elaraestates.com", focus: "Trousdale & Bel Air", bio: "Sebastian founded Elara on a simple creed: discretion, design literacy, and deep cultural capital. He has represented founders, artists, and global families across $1.8B of iconic Los Angeles estates." },
+  { name: "Isabella Noir", role: "Founding Partner", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=600&auto=format&fit=crop", sales: "$1.4B Sold", phone: "3108883528", email: "isabella@elaraestates.com", focus: "Beverly Hills & Holmby Hills", bio: "Isabella leads Elara's private clientele practice — 70% off-market, by referral only. Her record sales in Beverly Hills have set price benchmarks three years running." },
+  { name: "Julian Cross", role: "Senior Estate Director", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop", sales: "$890M Sold", phone: "3108883529", email: "julian@elaraestates.com", focus: "Hollywood Hills & Malibu", bio: "Julian pairs an architectural historian's eye with a negotiator's edge, guiding collectors to significant estates from the Bird Streets to Carbon Beach." },
 ]
 
 // --- Motion Variants ---
@@ -164,7 +152,7 @@ function Navbar() {
 // --- Hero ---
 function Hero() {
   const [current, setCurrent] = useState(0)
-  const [search, setSearch] = useState({ keyword: '', type: 'Buy', beds: '' })
+  const [search, setSearch] = useState({ keyword: '', type: 'Buy', beds: '', minPrice: '' })
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] })
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"])
@@ -312,7 +300,7 @@ function Hero() {
           <div className="grid grid-cols-3 lg:flex items-center gap-2 text-[11px] tracking-[0.14em] text-zinc-700 lg:border-l lg:pl-3 lg:ml-2 px-2 lg:px-0 pb-2 lg:pb-0">
             <select value={search.type} onChange={(e) => setSearch({ ...search, type: e.target.value })} className="bg-zinc-50 lg:bg-transparent border border-zinc-200 lg:border-0 rounded lg:rounded-none outline-none py-3 px-3 lg:pr-6 cursor-pointer hover:bg-zinc-100 transition"><option>Buy</option><option>Rent</option></select>
             <select value={search.beds} onChange={(e) => setSearch({ ...search, beds: e.target.value })} className="bg-zinc-50 lg:bg-transparent border border-zinc-200 lg:border-0 rounded lg:rounded-none outline-none py-3 px-3 lg:pr-6 cursor-pointer hover:bg-zinc-100 transition"><option value="">BEDS</option><option value="3">3+</option><option value="5">5+</option></select>
-            <select className="bg-zinc-50 lg:bg-transparent border border-zinc-200 lg:border-0 rounded lg:rounded-none outline-none py-3 px-3 lg:pr-6 cursor-pointer hover:bg-zinc-100 transition"><option>PRICE</option><option>$5M+</option><option>$10M+</option></select>
+            <select value={search.minPrice} onChange={(e) => setSearch({ ...search, minPrice: e.target.value })} className="bg-zinc-50 lg:bg-transparent border border-zinc-200 lg:border-0 rounded lg:rounded-none outline-none py-3 px-3 lg:pr-6 cursor-pointer hover:bg-zinc-100 transition"><option value="">PRICE</option><option value="5000000">$5M+</option><option value="10000000">$10M+</option><option value="50000000">$50M+</option></select>
           </div>
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleSearch} className="bg-[#0a0a0a] text-white px-8 py-4 text-xs tracking-[0.18em] font-semibold hover:bg-gold-600 transition w-full lg:w-auto">SEARCH</motion.button>
         </motion.div>
@@ -354,11 +342,12 @@ function Featured() {
       if (searchParams.keyword) params.search = searchParams.keyword
       if (searchParams.type) params.type = searchParams.type
       if (searchParams.beds) params.beds = searchParams.beds
+      if (searchParams.minPrice) params.minPrice = searchParams.minPrice
       params.limit = 12
       const res = await api.getProperties(params)
       if (res.data && res.data.length > 0) {
         setProperties(res.data)
-      } else if (searchParams.keyword || searchParams.type || searchParams.beds || neighborhood !== 'All') {
+      } else if (searchParams.keyword || searchParams.type || searchParams.beds || searchParams.minPrice || neighborhood !== 'All') {
         // genuine filter with zero matches — show empty state
         setProperties([])
       } else {
@@ -445,7 +434,7 @@ function Featured() {
                   whileHover={{ y: -6 }}
                   className="group bg-white border border-black/5 shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] transition-all duration-500 overflow-hidden"
                 >
-                  <Link to={p._id?.toString().length > 10 ? `/property/${p._id}` : '#'} className="block">
+                  <Link to={`/property/${p._id}`} className="block">
                     <div className="relative h-[300px] lg:h-[320px] overflow-hidden bg-zinc-100">
                       <motion.img
                         whileHover={{ scale: 1.07 }}
@@ -591,12 +580,15 @@ function Philosophy() {
 
 function EstatesCarousel() {
   const [collectionProps, setCollectionProps] = useState([])
-  const fallbackItems = [
-    { name: "The Modernist Canopy", loc: "Trousdale Estates", img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-    { name: "Villa del Cielo", loc: "Bel Air Crest", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop" },
-    { name: "Carbon Beach Sanctuary", loc: "Malibu", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=800&auto=format&fit=crop" },
-    { name: "Doheny Grand", loc: "Hollywood Hills", img: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=800&auto=format&fit=crop" },
-  ]
+  // Every fallback card carries a real id so it always opens an individual detail page
+  const fallbackItems = fallbackProperties.slice(0, 4).map((p) => ({
+    _id: p._id,
+    name: p.title,
+    loc: p.neighborhood,
+    img: p.image || p.images?.[0],
+    price: p.price,
+    address: p.address,
+  }))
 
   useEffect(() => {
     api.getProperties({ limit: 4, sort: '-featured' })
@@ -634,7 +626,7 @@ function EstatesCarousel() {
       })
   }, [])
 
-  const items = collectionProps.length > 0 ? collectionProps : fallbackItems.map((it, i) => ({ ...it, _id: null }))
+  const items = collectionProps.length > 0 ? collectionProps : fallbackItems
 
   return (
     <section id="estates" className="py-14 lg:py-20 bg-white border-y border-zinc-100 overflow-hidden">
@@ -705,6 +697,22 @@ function EstatesCarousel() {
 }
 
 function Agents() {
+  const [selected, setSelected] = useState(null)
+
+  const shareAgent = async (a) => {
+    const text = `${a.name} — ${a.role}, Elara Estates`
+    if (navigator.share) {
+      try { await navigator.share({ title: a.name, text, url: window.location.href }) } catch { /* dismissed */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${text} ${window.location.href}`)
+        alert('Agent profile link copied')
+      } catch {
+        alert(text)
+      }
+    }
+  }
+
   return (
     <section id="agents" className="py-14 lg:py-20 bg-[#faf9f7] overflow-hidden">
       <div className="max-w-[1420px] mx-auto px-5 lg:px-8">
@@ -731,20 +739,64 @@ function Agents() {
                 <motion.div initial={{ y: 12, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 + i * 0.05 }} className="absolute bottom-0 inset-x-0 bg-white/95 backdrop-blur border-t border-black/5 p-3.5 flex items-center justify-between">
                   <span className="text-[11px] tracking-[0.16em] font-bold">{a.sales}</span>
                   <span className="flex gap-1.5">
-                    <motion.span whileHover={{ scale: 1.15, y: -2 }} className="w-7 h-7 rounded-full bg-zinc-900 text-white flex items-center justify-center cursor-pointer"><Share2 size={12} /></motion.span>
-                    <motion.span whileHover={{ scale: 1.15, y: -2 }} className="w-7 h-7 rounded-full bg-zinc-900 text-white flex items-center justify-center cursor-pointer"><Globe size={12} /></motion.span>
-                    <motion.span whileHover={{ scale: 1.15, y: -2 }} className="w-7 h-7 rounded-full bg-zinc-900 text-white flex items-center justify-center cursor-pointer"><Mail size={12} /></motion.span>
+                    <motion.button whileHover={{ scale: 1.15, y: -2 }} onClick={() => shareAgent(a)} aria-label={`Share ${a.name}`} title="Share profile" className="w-7 h-7 rounded-full bg-zinc-900 text-white flex items-center justify-center cursor-pointer hover:bg-gold-600 transition"><Share2 size={12} /></motion.button>
+                    <motion.a whileHover={{ scale: 1.15, y: -2 }} href={`tel:${a.phone}`} aria-label={`Call ${a.name}`} title={a.phone} className="w-7 h-7 rounded-full bg-zinc-900 text-white flex items-center justify-center cursor-pointer hover:bg-gold-600 transition"><Phone size={12} /></motion.a>
+                    <motion.a whileHover={{ scale: 1.15, y: -2 }} href={`mailto:${a.email}`} aria-label={`Email ${a.name}`} title={a.email} className="w-7 h-7 rounded-full bg-zinc-900 text-white flex items-center justify-center cursor-pointer hover:bg-gold-600 transition"><Mail size={12} /></motion.a>
                   </span>
                 </motion.div>
               </div>
               <div className="p-6 text-center">
                 <div className="font-serif text-[20px]">{a.name}</div>
                 <div className="text-[11px] tracking-[0.2em] text-gold-600 mt-1 font-semibold">{a.role.toUpperCase()}</div>
-                <motion.button whileHover={{ x: 2 }} whileTap={{ scale: 0.98 }} className="mt-4 text-[11px] tracking-[0.18em] font-bold border-b border-black pb-1 hover:text-gold-600 hover:border-gold-600 transition">VIEW PROFILE</motion.button>
+                <motion.button whileHover={{ x: 2 }} whileTap={{ scale: 0.98 }} onClick={() => setSelected(a)} className="mt-4 text-[11px] tracking-[0.18em] font-bold border-b border-black pb-1 hover:text-gold-600 hover:border-gold-600 transition">VIEW PROFILE</motion.button>
               </div>
             </motion.div>
           ))}
         </div>
+
+        {/* Agent profile modal — individual info per agent */}
+        <AnimatePresence>
+          {selected && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelected(null)}
+              className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+            >
+              <motion.div
+                initial={{ y: 24, opacity: 0, scale: 0.98 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 24, opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+              >
+                <div className="grid sm:grid-cols-[240px_1fr]">
+                  <div className="relative h-64 sm:h-full min-h-[280px]">
+                    <img src={selected.image} alt={selected.name} className="absolute inset-0 w-full h-full object-cover" />
+                    <span className="absolute bottom-3 left-3 bg-white/95 px-3 py-1.5 text-[10px] tracking-[0.16em] font-bold">{selected.sales}</span>
+                  </div>
+                  <div className="p-6 lg:p-8">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-[10px] tracking-[0.28em] text-gold-700 font-semibold">{selected.role.toUpperCase()}</div>
+                        <div className="font-serif text-[28px] leading-tight mt-1">{selected.name}</div>
+                        <div className="text-[12px] tracking-[0.12em] text-zinc-500 mt-1">{selected.focus.toUpperCase()}</div>
+                      </div>
+                      <button onClick={() => setSelected(null)} aria-label="Close profile" className="w-9 h-9 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-black hover:text-white transition shrink-0"><X size={16} /></button>
+                    </div>
+                    <p className="text-zinc-600 text-[14px] leading-relaxed mt-4">{selected.bio}</p>
+                    <div className="grid grid-cols-2 gap-2 mt-6">
+                      <a href={`tel:${selected.phone}`} className="bg-[#0a0a0a] text-white py-3.5 text-[11px] tracking-[0.16em] font-semibold hover:bg-gold-600 transition flex items-center justify-center gap-2"><Phone size={14} /> {selected.phone}</a>
+                      <a href={`mailto:${selected.email}`} className="border border-black py-3.5 text-[11px] tracking-[0.16em] font-semibold hover:bg-black hover:text-white transition flex items-center justify-center gap-2"><Mail size={14} /> EMAIL</a>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -812,6 +864,20 @@ function Footer() {
     }
   }
 
+  const shareSite = async () => {
+    const shareData = { title: 'Elara Estates', text: 'Elara Estates — defining luxury real estate in Los Angeles', url: window.location.href }
+    if (navigator.share) {
+      try { await navigator.share(shareData) } catch { /* dismissed */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareData.url)
+        alert('Site link copied')
+      } catch {
+        alert(shareData.text)
+      }
+    }
+  }
+
   return (
     <footer ref={ref} id="contact" className="bg-[#0a0a0a] text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(201,152,26,0.08),transparent_70%)]" />
@@ -826,26 +892,30 @@ function Footer() {
           <motion.p variants={fadeUp} className="text-white/60 text-[14px] leading-relaxed mt-4 max-w-md">The brokerage for the iconic. Headquartered on Bedford — by appointment only. Private showings 7 days a week.</motion.p>
 
           <motion.div variants={stagger} className="mt-7 space-y-3.5 text-[13.5px] text-white/80">
-            {[
-              { icon: MapPin, text: "468 N Bedford Drive, Beverly Hills, CA 90210" },
-              { icon: Phone, text: "310.888.ELARA (3527)" },
-              { icon: Mail, text: "private@elaraestates.com" },
-            ].map(item => (
-              <motion.div key={item.text} variants={fadeUp} className="flex items-center gap-3 group">
-                <span className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:bg-gold-500 transition"><item.icon size={14} className="text-gold-400 group-hover:text-white" /></span>
-                {item.text}
-              </motion.div>
-            ))}
+            <motion.a variants={fadeUp} href="https://maps.google.com/?q=468+N+Bedford+Drive+Beverly+Hills+CA+90210" target="_blank" rel="noreferrer" className="flex items-center gap-3 group w-fit">
+              <span className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:bg-gold-500 transition"><MapPin size={14} className="text-gold-400 group-hover:text-white" /></span>
+              468 N Bedford Drive, Beverly Hills, CA 90210
+            </motion.a>
+            <motion.a variants={fadeUp} href="tel:3108883527" className="flex items-center gap-3 group w-fit">
+              <span className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:bg-gold-500 transition"><Phone size={14} className="text-gold-400 group-hover:text-white" /></span>
+              310.888.ELARA (3527)
+            </motion.a>
+            <motion.a variants={fadeUp} href="mailto:private@elaraestates.com" className="flex items-center gap-3 group w-fit">
+              <span className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:bg-gold-500 transition"><Mail size={14} className="text-gold-400 group-hover:text-white" /></span>
+              private@elaraestates.com
+            </motion.a>
           </motion.div>
 
           <motion.div variants={fadeUp} className="flex gap-2.5 mt-7">
-            {[
-              { icon: Share2 }, { icon: Globe }, { icon: Building2 }
-            ].map((s, i) => (
-              <motion.a key={i} whileHover={{ y: -3, scale: 1.06 }} whileTap={{ scale: 0.95 }} href="#" className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center hover:bg-gold-500 hover:border-gold-500 hover:text-white transition">
-                <s.icon size={14} />
-              </motion.a>
-            ))}
+            <motion.button whileHover={{ y: -3, scale: 1.06 }} whileTap={{ scale: 0.95 }} onClick={shareSite} aria-label="Share this site" title="Share" className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center hover:bg-gold-500 hover:border-gold-500 hover:text-white transition">
+              <Share2 size={14} />
+            </motion.button>
+            <motion.a whileHover={{ y: -3, scale: 1.06 }} whileTap={{ scale: 0.95 }} href="mailto:private@elaraestates.com" aria-label="Email us" title="Email us" className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center hover:bg-gold-500 hover:border-gold-500 hover:text-white transition">
+              <Globe size={14} />
+            </motion.a>
+            <motion.button whileHover={{ y: -3, scale: 1.06 }} whileTap={{ scale: 0.95 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Back to top" title="Back to top" className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center hover:bg-gold-500 hover:border-gold-500 hover:text-white transition">
+              <Building2 size={14} />
+            </motion.button>
           </motion.div>
         </motion.div>
 
@@ -867,14 +937,22 @@ function Footer() {
 
           <motion.div variants={stagger} className="grid grid-cols-3 gap-6 mt-9 text-xs">
             {[
-              { title: "EXPLORE", links: ["Properties", "Estates", "Agents", "Careers"] },
-              { title: "RESOURCES", links: ["Journal", "Press", "Neighborhoods", "Contact"] },
-              { title: "LEGAL", links: ["Privacy", "Terms", "DRE #02131234"] },
+              { title: "EXPLORE", links: [{ l: "Properties", to: "/properties" }, { l: "Estates", href: "#estates" }, { l: "Agents", href: "#agents" }, { l: "Careers", href: "#contact" }] },
+              { title: "RESOURCES", links: [{ l: "Journal", href: "#contact" }, { l: "Press", href: "#contact" }, { l: "Neighborhoods", to: "/properties" }, { l: "Contact", href: "#contact" }] },
+              { title: "LEGAL", links: [{ l: "Privacy" }, { l: "Terms" }, { l: "DRE #02131234" }] },
             ].map(col => (
               <motion.div key={col.title} variants={fadeUp}>
                 <div className="tracking-[0.2em] font-bold text-white/90 mb-3">{col.title}</div>
                 <div className="space-y-2.5 text-white/50">
-                  {col.links.map(l => <a key={l} href="#" className="block hover:text-white hover:translate-x-0.5 transition">{l}</a>)}
+                  {col.links.map(item => (
+                    item.to ? (
+                      <Link key={item.l} to={item.to} className="block hover:text-white hover:translate-x-0.5 transition">{item.l}</Link>
+                    ) : item.href ? (
+                      <a key={item.l} href={item.href} className="block hover:text-white hover:translate-x-0.5 transition">{item.l}</a>
+                    ) : (
+                      <span key={item.l} className="block">{item.l}</span>
+                    )
+                  ))}
                 </div>
               </motion.div>
             ))}
