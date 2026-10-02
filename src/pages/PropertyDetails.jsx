@@ -143,7 +143,7 @@ export default function PropertyDetails() {
               <span className="w-1 h-1 rounded-full bg-zinc-300"/>
               <span className="flex items-center gap-1.5"><Tag size={12}/> {property.city}</span>
               <span className="w-1 h-1 rounded-full bg-zinc-300"/>
-              <span className="flex items-center gap-1.5"><Calendar size={12}/> {new Date(property.createdAt).toLocaleDateString()}</span>
+              <span className="flex items-center gap-1.5"><Calendar size={12}/> {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : 'Private preview'}</span>
             </div>
             <h1 className="font-serif text-3xl lg:text-4xl mt-3">{property.title || property.address}</h1>
             <div className="font-serif text-2xl lg:text-3xl mt-2 text-gold-700">{property.price}</div>
@@ -211,12 +211,12 @@ export default function PropertyDetails() {
                 ['Price Value', property.priceValue ? `$${property.priceValue.toLocaleString()}` : property.price],
                 ['Sq Ft Value', property.sqftValue || property.sqft],
                 ['Featured', property.featured ? 'Yes' : 'No'],
-                ['Published', property.isPublished ? 'Yes' : 'No'],
-                ['Views', property.views],
+                ['Published', (property.isPublished ?? true) ? 'Yes' : 'No'],
+                ['Views', property.views ?? 0],
               ].map(([k,v])=>(
                 <div key={k} className="flex justify-between border-b border-zinc-200 px-4 py-3 odd:border-r">
                   <span className="text-zinc-500 text-xs tracking-[0.1em]">{k.toUpperCase()}</span>
-                  <span className="font-medium truncate ml-4">{String(v)}</span>
+                  <span className="font-medium truncate ml-4">{v ?? '—'}</span>
                 </div>
               ))}
             </div>
