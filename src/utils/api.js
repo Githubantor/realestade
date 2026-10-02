@@ -1,4 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Same-origin by default: works with the Vite dev proxy locally
+// and with the Vercel /api rewrite in production. Override with
+// VITE_API_URL only if the API lives on a different origin.
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 function getToken() {
   return localStorage.getItem('elara_token');

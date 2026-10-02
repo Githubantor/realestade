@@ -17,6 +17,9 @@ const fallbackProperties = [
   { _id: 4, price: "$62,800,000", address: "864 Stradella Road, Bel Air", beds: 7, baths: 11, sqft: "13,400", tag: "STRADALLA", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop"], status: "New Listing" },
   { _id: 5, price: "$28,900,000", address: "755 Sarbonne Road, Bel Air", beds: 5, baths: 7, sqft: "8,950", tag: "SARBONNE", image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1200&auto=format&fit=crop"], status: "Price Reduced" },
   { _id: 6, price: "$88,000,000", address: "1181 N Doheny Drive, Hollywood Hills", beds: 9, baths: 14, sqft: "21,000", tag: "DOHENY ESTATE", image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop"], status: "Iconic" },
+  { _id: 7, price: "$52,000,000", address: "31202 Carbon Beach Terrace, Malibu", beds: 6, baths: 8, sqft: "9,800", tag: "CARBON BEACH", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop"], status: "New Listing" },
+  { _id: 8, price: "$95,000,000", address: "1040 Laurel Way, Trousdale Estates", beds: 8, baths: 13, sqft: "19,200", tag: "TROUSDALE", image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1200&auto=format&fit=crop"], status: "Private Listing" },
+  { _id: 9, price: "$34,500,000", address: "623 N Palm Drive, Beverly Hills", beds: 6, baths: 8, sqft: "10,400", tag: "BEVERLY HILLS", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1200&auto=format&fit=crop", images: ["https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1200&auto=format&fit=crop"], status: "Price Reduced" },
 ]
 
 const agents = [
@@ -338,6 +341,11 @@ function Featured() {
   const [loading, setLoading] = useState(true)
   const cats = ['All', 'Beverly Hills', 'Bel Air', 'Hollywood Hills']
 
+  const filterFallback = (nbh) => {
+    if (nbh === 'All') return fallbackProperties
+    return fallbackProperties.filter(p => p.tag.toLowerCase().includes(nbh.split(' ')[0].toLowerCase()) || (nbh === 'Beverly Hills' && p.address.includes('Beverly')) || (nbh === 'Hollywood Hills' && p.address.includes('Hollywood')))
+  }
+
   const fetchProperties = async (neighborhood = 'All', searchParams = {}) => {
     setLoading(true)
     try {
@@ -350,15 +358,17 @@ function Featured() {
       const res = await api.getProperties(params)
       if (res.data && res.data.length > 0) {
         setProperties(res.data)
-      } else if (Object.keys(params).length > 0) {
-        // if search yields 0, show empty state
+      } else if (searchParams.keyword || searchParams.type || searchParams.beds || neighborhood !== 'All') {
+        // genuine filter with zero matches — show empty state
         setProperties([])
+      } else {
+        // unfiltered request returned nothing (empty DB / gateway returning HTML) — show curated fallback
+        setProperties(filterFallback(neighborhood))
       }
     } catch (e) {
       console.log('API offline, using fallback', e.message)
       // keep fallback filtered
-      if (neighborhood === 'All') setProperties(fallbackProperties)
-      else setProperties(fallbackProperties.filter(p => p.tag.toLowerCase().includes(neighborhood.split(' ')[0].toLowerCase()) || (neighborhood === 'Beverly Hills' && p.address.includes('Beverly')) || (neighborhood === 'Hollywood Hills' && p.address.includes('Hollywood'))))
+      setProperties(filterFallback(neighborhood))
     } finally {
       setLoading(false)
     }
@@ -474,7 +484,7 @@ function Featured() {
         )}
 
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mt-10">
-          <Link to="/admin" className="inline-flex items-center gap-2 border border-black px-8 py-4 text-[11px] tracking-[0.2em] font-semibold hover:bg-black hover:text-white transition group">
+          <Link to="/properties" className="inline-flex items-center gap-2 border border-black px-8 py-4 text-[11px] tracking-[0.2em] font-semibold hover:bg-black hover:text-white transition group">
             VIEW ALL LISTINGS <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
@@ -640,7 +650,7 @@ function EstatesCarousel() {
             <motion.p variants={fadeUp} className="text-[10px] tracking-[0.32em] text-gold-700 font-semibold inline-flex items-center gap-2"><span className="w-6 h-[1px] bg-gold-500" /> BY ARCHITECTURE</motion.p>
             <motion.h3 variants={fadeUp} className="font-serif text-[30px] lg:text-[42px] font-light mt-2 leading-none">Explore <span className="italic">Collections</span></motion.h3>
           </div>
-          <Link to="/property/6aaf9d4a033c0e9626b8f5b7" className="hidden lg:inline-flex items-center gap-2 text-[11px] tracking-[0.2em] font-semibold border-b border-black pb-1 hover:text-gold-700 hover:border-gold-700 transition">ALL COLLECTIONS <ArrowRight size={14} /></Link>
+          <Link to="/properties" className="hidden lg:inline-flex items-center gap-2 text-[11px] tracking-[0.2em] font-semibold border-b border-black pb-1 hover:text-gold-700 hover:border-gold-700 transition">ALL COLLECTIONS <ArrowRight size={14} /></Link>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -687,7 +697,7 @@ function EstatesCarousel() {
           })}
         </div>
         <div className="lg:hidden text-center mt-6">
-          <Link to="/property/6aaf9d4a033c0e9626b8f5b7" className="inline-flex items-center gap-2 text-[11px] tracking-[0.2em] font-semibold border-b border-black pb-1">ALL COLLECTIONS <ArrowRight size={14} /></Link>
+          <Link to="/properties" className="inline-flex items-center gap-2 text-[11px] tracking-[0.2em] font-semibold border-b border-black pb-1">ALL COLLECTIONS <ArrowRight size={14} /></Link>
         </div>
       </div>
     </section>

@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import AdminDashboard from './pages/AdminDashboard'
 import PropertyDetails from './pages/PropertyDetails'
+import Properties from './pages/Properties'
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/properties" element={<Properties />} />
       <Route path="/property/:id" element={<PropertyDetails />} />
       <Route path="*" element={<Home />} />
     </Routes>

@@ -90,39 +90,49 @@ app.use('/api/favorites', favoriteRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 // For local development - listen on port
 // For Vercel - export app and don't listen (Vercel handles it)
-let server;
 if (!process.env.VERCEL) {
-  server = app.listen(PORT, () => {
-    console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-    console.log(`🔗 http://localhost:${PORT}`);
-  });
+  let server;
+  const MAX_PORT_RETRIES = 10;
 
-  server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.error(`❌ Port ${PORT} already in use!`);
-      console.error(`👉 Fix: kill process on port ${PORT} or change PORT in backend/.env`);
-      console.error(`   Windows: netstat -aon | findstr :${PORT}  then  taskkill /F /PID <PID>`);
-      console.error(`   Or: taskkill /F /IM node.exe`);
-      const nextPort = Number(PORT) + 1;
-      console.log(`🔄 Trying port ${nextPort}...`);
-      server.listen(nextPort);
-    } else {
-      console.error('Server error:', err);
-    }
-  });
+  const listenOn = (port, retriesLeft = MAX_PORT_RETRIES) => {
+    server = app.listen(port, () => {
+      console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${port}`);
+      console.log(`🔗 http://localhost:${port}`);
+      if (port !== PORT) {
+        console.warn(`⚠️  Port ${PORT} was busy, using ${port} instead.`);
+        console.warn(`   Frontend Vite proxy targets http://localhost:${PORT} — free that port or update vite.config.js`);
+      }
+    });
 
-  // Graceful shutdown
-  process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down gracefully');
-    server.close(() => process.exit(0));
-  });
-  process.on('SIGINT', () => {
-    server.close(() => process.exit(0));
-  });
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE' && retriesLeft > 0) {
+        console.error(`❌ Port ${port} already in use!`);
+        console.error(`👉 Fix: kill process on port ${port} or change PORT in backend/.env`);
+        console.error(`   Windows: netstat -aon | findstr :${port}  then  taskkill /F /PID <PID>`);
+        const nextPort = port + 1;
+        console.log(`🔄 Trying port ${nextPort}...`);
+        listenOn(nextPort, retriesLeft - 1);
+      } else {
+        console.error('Server error:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  listenOn(PORT);
+
+  // Graceful shutdown (registered once)
+  const shutdown = (signal) => {
+    console.log(`${signal} received, shutting down gracefully`);
+    if (server) server.close(() => process.exit(0));
+    else process.exit(0);
+  };
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 export default app;
