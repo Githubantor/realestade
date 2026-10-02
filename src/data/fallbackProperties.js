@@ -94,5 +94,12 @@ export const fallbackProperties = [
   },
 ];
 
-export const findFallbackProperty = (id) =>
-  fallbackProperties.find((p) => String(p._id) === String(id));
+export const findFallbackProperty = (id) => {
+  const key = String(id);
+  const direct = fallbackProperties.find((p) => String(p._id) === key);
+  if (direct) return direct;
+  // Legacy numeric card ids (older builds) map onto the same curated listings
+  const legacy = /^([1-9])$/.exec(key);
+  if (legacy) return fallbackProperties.find((p) => p._id === `mock${legacy[1]}`);
+  return undefined;
+};
